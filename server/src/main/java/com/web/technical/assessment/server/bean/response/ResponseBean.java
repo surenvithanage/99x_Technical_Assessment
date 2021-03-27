@@ -17,7 +17,6 @@ public class ResponseBean {
     private String errorCode;
     private String messageType; //S -> successMessage ,W -> warningMessage ,E -> errorMessage
     private String message;
-    private String timestamp;
     private List<KeyValueBean> data = new ArrayList<KeyValueBean>();
 
     public ResponseBean() {
@@ -63,14 +62,6 @@ public class ResponseBean {
 
     public void setMessage(String message) {
         this.message = message;
-    }
-
-    public String getTimestamp() {
-        return timestamp;
-    }
-
-    public void setTimestamp(String timestamp) {
-        this.timestamp = timestamp;
     }
 
     public List<KeyValueBean> getData() {

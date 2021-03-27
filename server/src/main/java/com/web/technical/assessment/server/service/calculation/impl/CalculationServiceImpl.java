@@ -36,10 +36,13 @@ public class CalculationServiceImpl implements CalculationService {
                 Product product = productList.get();
                 if (calculatorDTO.isSelectedCarton()) {
                     double priceOfCarton = product.getPricePerCarton();
-                    if (Double.parseDouble(calculatorDTO.getNoOfCartons()) >= 3) {
-                        double discount = product.getPricePerCarton() * 10 / 100;
+                    // check if eligible for the discount
+                    if (Double.parseDouble(calculatorDTO.getNoOfCartons()) >= product.getDiscountQty()) {
+                        // calculating the discount
+                        double discount = product.getPricePerCarton() * product.getDiscount() / 100;
                         priceDto.setPrice(String.valueOf((Double.parseDouble(calculatorDTO.getNoOfCartons()) * priceOfCarton) - discount));
                     } else {
+                        // calculating the total cost without the discount
                         priceDto.setPrice(String.valueOf(Double.parseDouble(calculatorDTO.getNoOfCartons()) * priceOfCarton));
                     }
                     responseBean.setRequestOk(true);
@@ -52,13 +55,17 @@ public class CalculationServiceImpl implements CalculationService {
                     int numberOfUnits = Integer.parseInt(calculatorDTO.getNoOfUnits()) % product.getUnit();
                     double discountAmount = 0.0;
                     if (numberOfCartons > 0) {
-                        if (numberOfCartons >= 3) {
-                            discountAmount = product.getPricePerCarton() * 10 / 100;
+                        // calculating the discount amount
+                        if (numberOfCartons >= product.getDiscountQty()) {
+                            discountAmount = product.getPricePerCarton() * product.getDiscount() / 100;
                         }
+                        // total amount
                         double totalAmount = (Double.parseDouble(calculatorDTO.getNoOfUnits()) * priceOfUnit) + (numberOfUnits * product.getUnitPrice()) - discountAmount;
                         priceDto.setPrice(String.valueOf(totalAmount));
                     } else {
-                        priceDto.setPrice(String.valueOf(Double.parseDouble(calculatorDTO.getNoOfUnits()) * priceOfUnit));
+                        // manual labour charges
+                        double compensateAmount = (product.getPricePerCarton() * product.getCompensate()) / 100;
+                        priceDto.setPrice(String.valueOf((Double.parseDouble(calculatorDTO.getNoOfUnits()) * priceOfUnit) + compensateAmount));
                     }
                     responseBean.setRequestOk(true);
                     KeyValueBean kvListUserData = new KeyValueBean(CodeVarList.CODE_PRICE_DATA, priceDto);

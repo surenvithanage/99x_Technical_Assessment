@@ -31,7 +31,7 @@ public class ProductResponseMapper {
                 productDto.setCode("--");
             }
             if (product.getName() != null && !product.getName().isEmpty()) {
-                productDto.setName(product.getCode());
+                productDto.setName(product.getName());
             } else {
                 productDto.setName("--");
             }
