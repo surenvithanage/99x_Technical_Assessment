@@ -33,20 +33,29 @@ public class PriceEngineServiceImpl implements PriceEngineService {
             Optional<Product> productList = productRepository.findById(Long.valueOf(priceEngineDTO.getProductId()));
             if (productList.isPresent()) {
                 Product product = productList.get();
-                int noOfUnits = Integer.parseInt(priceEngineDTO.getNoOfUnits());
-                if (noOfUnits > product.getUnit()) {
-                    int numberOfCartons = noOfUnits / product.getUnit();
-                    int numberOfUnits = noOfUnits % product.getUnit();
-                    engineDTO.setNoOfCartons(String.valueOf(numberOfCartons));
-                    engineDTO.setNoOfUnits(String.valueOf(numberOfUnits));
+                if (priceEngineDTO.getNoOfUnits() != null && !priceEngineDTO.getNoOfUnits().isEmpty()) {
+                    int noOfUnits = Integer.parseInt(priceEngineDTO.getNoOfUnits());
+                    if (noOfUnits > product.getUnit()) {
+                        int numberOfCartons = noOfUnits / product.getUnit();
+                        int numberOfUnits = noOfUnits % product.getUnit();
+                        engineDTO.setNoOfCartons(String.valueOf(numberOfCartons));
+                        engineDTO.setNoOfUnits(String.valueOf(numberOfUnits));
+                        responseBean.setRequestOk(true);
+                        KeyValueBean kvListUserData = new KeyValueBean(CodeVarList.CODE_OPTIMIZE_PRICE_DATA, engineDTO);
+                        responseBean.setErrorCode("S");
+                        responseBean.setData(kvListUserData);
+                    } else {
+                        responseBean.setRequestOk(false);
+                        responseBean.setErrorCode("E");
+                        responseBean.setMessage(MessageVarList.PRICE_OPTIMIZE_ERROR_MSG);
+                    }
+                } else {
+                    engineDTO.setNoOfCartons(priceEngineDTO.getNoOfCartons());
+                    engineDTO.setNoOfUnits(priceEngineDTO.getNoOfUnits());
                     responseBean.setRequestOk(true);
                     KeyValueBean kvListUserData = new KeyValueBean(CodeVarList.CODE_OPTIMIZE_PRICE_DATA, engineDTO);
                     responseBean.setErrorCode("S");
                     responseBean.setData(kvListUserData);
-                } else {
-                    responseBean.setRequestOk(false);
-                    responseBean.setErrorCode("E");
-                    responseBean.setMessage(MessageVarList.PRICE_OPTIMIZE_ERROR_MSG);
                 }
             }
         } catch (NumberFormatException e) {
